@@ -6,9 +6,7 @@ import {
   Body,
   Patch,
   Delete,
-  // HttpCode,
-  // HttpStatus,
-  // Res,
+  Query,
 } from '@nestjs/common';
 
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
@@ -20,21 +18,22 @@ import { CoffeeService } from './coffees.service';
 @Controller('coffees')
 export class CoffeesController {
   constructor(private readonly coffeeService: CoffeeService) {}
-  // @Get()
-  // findAll() {
-  //   return 'this is for coffeeeeee.';
-  // }
-  // findAll(@Res() response) {
-  //   response.status(200).send('This return is ok.');
-  // }// 還是可以用express的方法，但不受所管理
-  @Get()
-  async getAllCoffee(): Promise<Coffee[]> {
-    return this.coffeeService.getAllCoffee();
-  }
-  @Get(':id')
+
+  @Get(':brand')
   async getCoffeesBrand(@Param('brand') brand: string): Promise<Coffee> {
     return this.coffeeService.getCoffeesBrand(brand);
   }
+
+  @Get()
+  async getAllCoffee(@Query() query): Promise<Coffee[]> {
+    const { price } = query;
+    if (price) {
+      return this.coffeeService.getGtCoffee(price);
+    } else {
+      return this.coffeeService.getAllCoffee();
+    }
+  }
+
   @Post()
   async createCoffee(@Body() createUser: CreateCoffeeDto): Promise<Coffee> {
     return this.coffeeService.createCoffee(createUser);
@@ -48,18 +47,8 @@ export class CoffeesController {
     return this.coffeeService.updateCoffee(id, updateUser);
   }
 
-  // @Post()
-  // // @HttpCode(HttpStatus.GONE) 這邊可以更改狀態碼
-  // create(@Body() body) {
-  //   return body;
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() body) {
-  //   return 'this is for ' + id;
-  // }
   @Delete('id')
-  remove(@Param('id') id: string) {
-    return 'this is for ' + id;
+  async remove(@Param('id') id: string): Promise<Coffee> {
+    return this.coffeeService.findOneAndDelete(id);
   }
 }

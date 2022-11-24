@@ -24,4 +24,8 @@ export class CoffeeRepository {
   ): Promise<Coffee> {
     return this.coffeeModel.findOneAndUpdate(query, coffee, { new: true });
   }
+
+  async findOneAndDelete(cup_id: FilterQuery<Coffee>): Promise<Coffee> {
+    return this.coffeeModel.findOneAndDelete(cup_id, { new: true });
+  }
 }

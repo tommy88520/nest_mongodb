@@ -9,8 +9,8 @@ import { Coffee } from './schema/coffee';
 export class CoffeeService {
   constructor(private readonly coffeeRepo: CoffeeRepository) {}
 
-  async getCoffeesBrand(brand: string): Promise<Coffee> {
-    return this.coffeeRepo.findOne({ brand });
+  async getCoffeesBrand(cup_id: string): Promise<Coffee> {
+    return this.coffeeRepo.findOne({ cup_id });
   }
 
   async getAllCoffee(): Promise<Coffee[]> {
@@ -20,7 +20,7 @@ export class CoffeeService {
   async getGtCoffee(query: number): Promise<Coffee[]> {
     return this.coffeeRepo.find({ price: { $gt: query } });
   }
-  async createCoffee(CreateCoffeeDto): Promise<Coffee> {
+  async createCoffee(CreateCoffeeDto: CreateCoffeeDto): Promise<Coffee> {
     return this.coffeeRepo.create({
       cup_id: uuidv4(),
       ...CreateCoffeeDto,
@@ -31,5 +31,9 @@ export class CoffeeService {
     coffeeUpdate: UpdateCoffeeDto,
   ): Promise<Coffee> {
     return this.coffeeRepo.findOneAndUpdate({ cup_id }, coffeeUpdate);
+  }
+
+  async findOneAndDelete(cup_id: string): Promise<Coffee> {
+    return this.coffeeRepo.findOneAndDelete({ cup_id });
   }
 }
