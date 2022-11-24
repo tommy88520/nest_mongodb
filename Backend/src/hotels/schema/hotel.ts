@@ -1,30 +1,34 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { Comments } from '../dto/comment.dto';
 
-export type CoffeeDocument = Document & Coffee;
+export type HotelDocument = Document & Hotel;
 
 @Schema()
-export class Coffee {
+export class Hotel {
   @Prop()
   cup_id: string;
 
   @Prop({ required: true })
-  brand: string;
+  img: string;
 
   @Prop({ required: true })
-  category: string;
+  name: string;
 
   @Prop({ required: true })
-  cold: string;
+  location: string;
 
   @Prop({ required: true })
-  ice: boolean;
+  desc: string;
 
   @Prop([String])
-  args: string[];
+  roomDetail: string[];
 
   @Prop({ required: true })
   price: number;
+
+  @Prop({ type: Comments })
+  comments: Comments;
 }
 
-export const coffeeSchema = SchemaFactory.createForClass(Coffee);
+export const hotelSchema = SchemaFactory.createForClass(Hotel);
