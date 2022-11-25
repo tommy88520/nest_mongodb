@@ -3,7 +3,8 @@ export class UpdateHotelDto {
   name: string;
   location: string;
   desc: string;
-  comments: { text: string; number: number };
+  comments: string;
+  appraise: number;
   price: number;
   roomDetail: string[] = [
     'wifi',

@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { Comments } from '../dto/comment.dto';
 
 export type HotelDocument = Document & Hotel;
 
@@ -27,8 +26,13 @@ export class Hotel {
   @Prop({ required: true })
   price: number;
 
-  @Prop({ type: Comments })
-  comments: Comments;
+  // @Prop({ type: Comments })
+  // comments: Comments;
+  @Prop({ required: true })
+  comments: string;
+
+  @Prop({ required: true })
+  appraise: number;
 }
 
 export const hotelSchema = SchemaFactory.createForClass(Hotel);
