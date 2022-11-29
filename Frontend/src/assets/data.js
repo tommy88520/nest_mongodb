@@ -162,13 +162,25 @@ export const topBarOption = [
   {
     value: "asc",
     label: "價錢由低至高",
+    newValue: {
+      price: 1,
+      appraise: "",
+    },
   },
   {
     value: "desc",
     label: "價錢由高至低",
+    newValue: {
+      price: -1,
+      appraise: "",
+    },
   },
   {
     value: "star",
     label: "星級最高",
+    newValue: {
+      price: "",
+      appraise: -1,
+    },
   },
 ];

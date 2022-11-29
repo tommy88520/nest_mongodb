@@ -15,27 +15,32 @@
           class="demo-container__check-box"
           :class="{ 'demo-container__box-open': optionStyle }"
         >
-          <el-checkbox
-            v-for="(option, optionIndex) in sideOption"
-            :key="optionIndex"
-            v-model="option.value"
-            :label="option.label"
-            size="large"
-            @change="selectRequire(option.value, optionIndex)"
-          />
+          <el-checkbox-group v-model="checkList">
+            <el-checkbox
+              v-for="(option, optionIndex) in sideOption"
+              :key="optionIndex"
+              :label="option.type"
+              size="large"
+              @change="selectChoice()"
+            >
+              {{ option.label }}
+            </el-checkbox>
+          </el-checkbox-group>
         </div>
       </div>
     </div>
     <div class="demo-container__detail">
       <div class="demo-container__top-bar">
         <p class="demo-container__title">找到{{ placeDetail.length }}間住宿</p>
-        <router-link to="/create">About</router-link>
+        <router-link class="demo-container__link" to="/create"
+          >新增旅館</router-link
+        >
         <el-select
           v-model="barOption"
           class="demo-container__select"
           placeholder="為您精選"
           size="large"
-          @change="selectChoice"
+          @change="selectChoice(barOption)"
         >
           <el-option
             v-for="item in topBarOption"
@@ -45,7 +50,7 @@
           />
         </el-select>
       </div>
-      <PostList :placeDetail="placeDetail" />
+      <PostList />
     </div>
     <ScrollTop />
   </div>
@@ -53,13 +58,12 @@
 </template>
 <script>
 import { useStore } from "vuex";
-import { ref, reactive, onMounted } from "vue";
-import { roomData, firstOption, topBarOption } from "../assets/data.js";
+import { ref, reactive } from "vue";
+import { firstOption, topBarOption } from "../assets/data.js";
 import PostList from "@/components/PostList.vue";
 import ScrollTop from "@/components/ScrollTop.vue";
 import DownIcon from "@/components/DownIcon.vue";
 import UpIcon from "@/components/UpIcon.vue";
-import _ from "lodash";
 export default {
   name: "App",
   components: {
@@ -68,73 +72,50 @@ export default {
     DownIcon,
     UpIcon,
   },
-  setup() {
+  async setup() {
     const store = useStore();
+    await store.dispatch("getHotel");
+
+    let placeDetail = ref(store.state.hotelData);
     const barOption = ref("");
-    const originData = _.cloneDeep(roomData);
+    const checkList = ref([]);
     let optionStyle = ref(true);
-    let placeDetail = ref(roomData);
     let sideOption = reactive(firstOption);
-    let optional = reactive([]);
-    onMounted(() => {
-      store.dispatch("getHotel");
-    });
-    function selectRequire(v, i) {
-      sideOption[i].value = v;
-      optional = sideOption.reduce((acr, cur) => {
-        if (cur.value) {
-          acr.push(cur.type);
-        }
-        return acr;
-      }, []);
-      placeDetail.value = originData.reduce((acc, cur) => {
-        const isFounded = optional.every((a) => cur.roomDetail.includes(a));
-        if (isFounded) {
-          acc.push(cur);
-        }
-        return acc;
-      }, []);
-      selectChoice();
-    }
-    function selectChoice() {
-      const action = barOption.value;
-      switch (action) {
-        case "all": {
-          placeDetail.value = _.shuffle(placeDetail.value);
-          break;
-        }
-        case "asc": {
-          placeDetail.value = placeDetail.value.sort(function (a, b) {
-            return a.price > b.price ? 1 : -1;
-          });
-          break;
-        }
-        case "desc": {
-          placeDetail.value = placeDetail.value.sort(function (a, b) {
-            return a.price < b.price ? 1 : -1;
-          });
-          break;
-        }
-        case "star": {
-          placeDetail.value = placeDetail.value.sort(function (a, b) {
-            return Number(a.appraise) < Number(b.appraise) ? 1 : -1;
-          });
-          break;
-        }
-        default: {
-          break;
-        }
+
+    async function selectChoice(val) {
+      let option;
+      if (val === "asc") {
+        option = {
+          price: 1,
+          checkList: checkList.value,
+        };
+      } else if (val === "desc") {
+        option = {
+          price: -1,
+          checkList: checkList.value,
+        };
+      } else if (val === "all") {
+        option = {
+          checkList: checkList.value,
+        };
+      } else {
+        option = {
+          appraise: -1,
+          checkList: checkList.value,
+        };
       }
+      await store.dispatch("sortHotels", option);
+      placeDetail.value = store.state.hotelData;
     }
+
     return {
       placeDetail,
       sideOption,
       topBarOption,
-      selectRequire,
-      selectChoice,
       barOption,
-      optional,
       optionStyle,
+      selectChoice,
+      checkList,
     };
   },
 };
@@ -194,6 +175,10 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+  &__link {
+    text-decoration: none;
+    color: #1a2b48 !important;
   }
   @media (max-width: 992px) {
     justify-content: center;

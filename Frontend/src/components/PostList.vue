@@ -23,18 +23,21 @@
 </template>
 
 <script>
+import { useStore } from "vuex";
+import { computed } from "vue";
 import { digits } from "../assets/number.js";
 import LocationIcon from "./LocationIcon.vue";
 export default {
   name: "PostList",
-  props: {
-    placeDetail: Array,
-  },
   components: {
     LocationIcon,
   },
   setup() {
-    return { digits };
+    const store = useStore();
+    const placeDetail = computed(() => {
+      return store.state.hotelData;
+    });
+    return { digits, placeDetail };
   },
 };
 </script>
@@ -47,6 +50,7 @@ export default {
   margin-bottom: 20px;
   border: 1px solid #dfdfdf;
   font-family: "Poppins", sans-serif;
+  max-width: 1140px;
   &__title {
     font-size: 24px;
     color: #1a2b48;

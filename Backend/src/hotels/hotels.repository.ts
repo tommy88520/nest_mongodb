@@ -28,4 +28,18 @@ export class HotelRepository {
   async findOneAndDelete(cup_id: FilterQuery<Hotel>): Promise<Hotel> {
     return this.hotelModel.findOneAndDelete(cup_id, { new: true });
   }
+  async sortByHotelPrice(query: FilterQuery<Hotel>): Promise<Hotel[]> {
+    return this.hotelModel.find({}).sort(query);
+  }
+
+  async sortByHotelAppraise(
+    data: string[],
+    query: FilterQuery<Hotel>,
+  ): Promise<Hotel[]> {
+    return this.hotelModel.find({ roomDetail: { $all: data } }).sort(query);
+  }
+
+  async getLength(data: string[]): Promise<number> {
+    return this.hotelModel.find({ roomDetail: { $all: data } }).count();
+  }
 }

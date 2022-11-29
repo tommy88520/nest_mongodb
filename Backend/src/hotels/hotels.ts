@@ -19,11 +19,6 @@ import { HotelService } from './hotels.service';
 export class HotelsController {
   constructor(private readonly hotelService: HotelService) {}
 
-  @Get(':brand')
-  async getHotelsBrand(@Param('brand') brand: string): Promise<Hotel> {
-    return this.hotelService.getHotelsBrand(brand);
-  }
-
   @Get()
   async getAllHotel(@Query() query): Promise<Hotel[]> {
     const { price } = query;
@@ -37,6 +32,10 @@ export class HotelsController {
   @Post()
   async createHotel(@Body() createUser: CreateHotelDto): Promise<Hotel> {
     return this.hotelService.createHotel(createUser);
+  }
+  @Post('sort')
+  async sortHotel(@Body() detail: string[], @Query() query) {
+    return this.hotelService.sortByHotelAppraise(detail, query);
   }
 
   @Patch(':id')
